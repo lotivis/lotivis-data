@@ -384,18 +384,6 @@ export class DataController {
   sumOfDate(d) {
     return d3.sum(this.dataDate(s), (d) => d.value);
   }
-
-  // sum() {
-  //   return d3.sum(this.data, (d) => d.value);
-  // }
-
-  // max() {
-  //   return d3.max(this.data, (item) => item.value);
-  // }
-
-  // min() {
-  //   return d3.min(this.data, (item) => item.value);
-  // }
 }
 
 /**
