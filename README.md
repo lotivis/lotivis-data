@@ -2,6 +2,15 @@
 
 ## Functions
 
+### DataController
+
+|Function|Description|
+|-|-|
+|`id()`| Returns the id of the controller. |
+|`data(_)`| Gets or sets the controllers data. |
+|`snapshot()`| Returns the current snapshot from the filtered data. |
+|`filters(_)`| Gets or sets the controllers filters. |
+
 ### `Events`
 
 |Function|Description|

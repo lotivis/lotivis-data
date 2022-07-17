@@ -80,6 +80,10 @@ export class DataController {
     this.id = id;
     attr.id = id;
 
+    this.id = function () {
+      return id;
+    };
+
     /**
      *
      * @returns
