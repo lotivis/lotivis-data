@@ -11,6 +11,7 @@ export function attributable(src, attr) {
     if (src[key] && typeof src[key] === "function") {
       return;
     }
+
     src[key] = function (_) {
       return arguments.length ? ((attr[key] = _), src) : attr[key];
     };

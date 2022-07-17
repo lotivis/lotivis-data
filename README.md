@@ -16,7 +16,7 @@
 |Function|Description|
 |-|-|
 |`onFilter(name, callback)`| Adds a listener with the passed name for filter changes. |
-|`onData(name, callback)`| Adds a listener with the passed name for data changes. |
+|`onChange(name, callback)`| Adds a listener with the passed name for data changes. |
 |`removeAllListeners()`| ARemoves all callbacks. |
 
 ### `Events`
