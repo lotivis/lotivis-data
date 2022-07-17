@@ -1,10 +1,10 @@
 import * as d3 from "d3";
-import { ltv_debug } from "./config.js";
 
 /**
  * Events dispatch center.
  *
- * Lists of valid actions:
+ * List of valid actions:
+ *
  * - "filter"
  * - "data"
  * - "map-selection-will-change"
@@ -15,10 +15,10 @@ export class Events {
    * Global dispatch object.
    */
   static disp = d3.dispatch(
-    "filter-will-change",
-    "filter-did-change",
     "filter",
     "data",
+    "filter-will-change",
+    "filter-did-change",
     "data-will-change",
     "data-did-change",
     "map-selection-will-change",

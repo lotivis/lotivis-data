@@ -1,12 +1,45 @@
 import * as d3 from "d3";
-// import { FILENAME_GENERATOR } from "../../lotivis-charts/src/common/filename.js.js";
-// import { DEFAULT_DATE_ORDINATOR } from "../../lotivis-charts/src/common/date.ordinator.js";
-import { Data } from "./data.js";
-import { uniqueId } from "./identifiers.js";
-// import { prefix } from "../../lotivis-charts/src/common/helpers.js";
-// import { datatext, data_preview } from "../../lotivis-bu/src/js/datatext.js";
-import { Events } from "./events.js";
 import { attributable } from "./attributable.js";
+import { FILENAME_GENERATOR } from "./filename.js";
+import { Data } from "./data.js";
+import { Events } from "./events.js";
+
+function prefix(src, pre) {
+  return (src = "" + src), src.startsWith(pre || "") ? src : pre + src;
+}
+
+export function dataController(data) {
+  return new DataController(data);
+}
+
+export function flatDataset(d) {
+  if (Array.isArray(d)) {
+    throw new Error("expecting object. found array");
+  }
+
+  if (!d || !d.data) {
+    throw new Error("dataset has no data");
+  }
+
+  return d.data.map((i) => {
+    return {
+      label: d.label,
+      group: d.group,
+      location: i.location,
+      date: i.date,
+      value: i.value,
+    };
+  });
+}
+
+/**
+ * Flattens the given datasets.
+ * @param {*} ds
+ * @returns {Array} The flat version
+ */
+export function flatDatasets(ds) {
+  return ds.reduce((memo, d) => memo.concat(flatDataset(d)), []);
+}
 
 export class DataController {
   /**
@@ -21,7 +54,7 @@ export class DataController {
     // create data model
     data = Data(data);
 
-    let id = uniqueId("dc"),
+    let id = "dc-" + new Date().getTime(),
       disp = d3.dispatch("filter", "data"),
       attr = {
         id: id,
@@ -133,7 +166,7 @@ export class DataController {
 
     this.clear = function (name, sender) {
       if (this.filters(name).length === 0)
-        return ltv_debug("filter already empty", name);
+        return console.log("filter already empty", name);
       attr.filters[name] = [];
       return this.filtersDidChange(name, "clear", null, sender);
     };
@@ -262,8 +295,8 @@ export class DataController {
     calculateSnapshot();
 
     // debug
-    ltv_debug("data controller", attr.id, this);
-    data_preview(this);
+    console.log("data controller", attr.id, this);
+    // data_preview(this);
 
     return this;
   }

@@ -15,7 +15,7 @@ const config = {
     format: "umd",
     indent: false,
     extend: true,
-    banner: `// ${meta.homepage} v${meta.version} Copyright ${copyright}`,
+    banner: `// ${meta.name} v${meta.version} Copyright ${copyright}`,
     globals: Object.assign(
       {},
       ...Object.keys(meta.dependencies || {})
@@ -24,6 +24,10 @@ const config = {
     ),
   },
   plugins: [nodeResolve()],
+  onwarn(message, warn) {
+    if (message.code === "CIRCULAR_DEPENDENCY") return;
+    warn(message);
+  },
 };
 
 export default [
