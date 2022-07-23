@@ -8,7 +8,7 @@ If you use npm, `npm install lotivis-data`. You can also download the [latest re
 <script src="https://cdn.jsdelivr.net/..."></script>
 <script>
 
-// ...
+let dataController = lotivis.dataController();
 
 </script>
 
@@ -16,32 +16,45 @@ If you use npm, `npm install lotivis-data`. You can also download the [latest re
 
 ## API Reference
 
-### lotivis.**[id](./src/parse.js)**()
+### dataController.**[id](./src/controller.js)**()
 
-### DataController
+Returns the id of the controller.
 
-|Function|Description|
-|-|-|
-|`id()`| Returns the id of the controller. |
-|`data(_)`| Gets or sets the controllers data. |
-|`snapshot()`| Returns the current snapshot from the filtered data. |
-|`filters(_)`| Gets or sets the controllers filters. |
+### dataController.**[data](./src/controller.js)**(_)
 
-#### Listen to events
+Gets or sets the controllers data.
 
-|Function|Description|
-|-|-|
-|`onFilter(name, callback)`| Adds a listener with the passed name for filter changes. |
-|`onChange(name, callback)`| Adds a listener with the passed name for data changes. |
-|`removeAllListeners()`| ARemoves all callbacks. |
+### dataController.**[snapshot](./src/controller.js)**()
 
-### `Events`
+Returns the current snapshot from the filtered data.
 
-|Function|Description|
-|-|-|
-|`Events.disp`| The static dispatch object. |
-|`Events.on(type, callback)`| Adds the given `callback` for the given `type`. |
-|`Events.call(type, sender, ...params)`| Calls the `callback` for the given `type` with the given `sender` and `params`. |
+### dataController.**[filters](./src/controller.js)**(_)
+
+Gets or sets the controllers filters.
+
+### dataController.**[onFilter](./src/controller.js)**(name, callback)
+
+Adds a listener with the passed name for filter changes.
+
+### dataController.**[onChange](./src/controller.js)**(name, callback)
+
+Adds a listener with the passed name for filter changes.
+
+### dataController.**[removeAllListeners](./src/controller.js)**()
+
+Removes all callbacks.
+
+### Events.**[disp](./src/events.js)**()
+
+The static dispatch object.
+
+### Events.**[on](./src/events.js)**(type, callback)
+
+ Adds the given `callback` for the given `type`. 
+
+### Events.**[call](./src/events.js)**(type, sender, ...params)
+
+Calls the `callback` for the given `type` with the given `sender` and `params`.
 
 ## Development
 
