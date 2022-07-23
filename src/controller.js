@@ -111,23 +111,31 @@ export class DataController {
     // listeners
 
     this.onFilterWillChange = function (name, callback) {
-      return attr.disp.on(prefix(name, "filter-will-change"), callback), this;
+      return attr.disp.on(prefix(name, "filter-will-change."), callback), this;
     };
 
     this.onFilterDidChange = function (name, callback) {
-      return attr.disp.on(prefix(name, "filter-did-change"), callback), this;
+      return attr.disp.on(prefix(name, "filter-did-change."), callback), this;
     };
 
     this.onDataWillChange = function (name, callback) {
-      return attr.disp.on(prefix(name, "data-will-change"), callback), this;
+      return attr.disp.on(prefix(name, "data-will-change."), callback), this;
     };
 
     this.onDataDidChange = function (name, callback) {
-      return attr.disp.on(prefix(name, "data-did-change"), callback), this;
+      return attr.disp.on(prefix(name, "data-did-change."), callback), this;
     };
 
     this.removeAllListeners = function () {
-      return (attr.disp = d3Dispatch("filter", "change")), this;
+      return (
+        (attr.disp = d3Dispatch(
+          "filter-will-change",
+          "filter-did-change",
+          "data-will-change",
+          "data-did-change"
+        )),
+        this
+      );
     };
 
     this.filters = function (name) {
