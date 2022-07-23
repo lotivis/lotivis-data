@@ -6,9 +6,6 @@ const copyright = "Lukas Danckwerth";
 
 const config = {
   input: "src/index.js",
-  external: Object.keys(meta.dependencies || {}).filter((key) =>
-    /^lotivis-/.test(key)
-  ),
   output: {
     file: `dist/${meta.name}.js`,
     name: "lotivis",
@@ -16,12 +13,6 @@ const config = {
     indent: false,
     extend: true,
     banner: `// ${meta.name} v${meta.version} Copyright ${copyright}`,
-    globals: Object.assign(
-      {},
-      ...Object.keys(meta.dependencies || {})
-        .filter((key) => /^lotivis-/.test(key))
-        .map((key) => ({ [key]: "lotivis" }))
-    ),
   },
   plugins: [nodeResolve()],
   onwarn(message, warn) {
