@@ -64,7 +64,7 @@ Adds a listener with the passed name for `data-did-change` events.
 
 Removes all callbacks.
 
-#### dataController.**[filters](./src/controller.js)**(name)
+#### dataController.**[filters](./src/controller.js)**(name?)
 
 Gets the controllers filters. Calling without specifying a `name` will return the following presented filters object.
 ```js
