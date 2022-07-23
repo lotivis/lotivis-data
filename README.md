@@ -66,9 +66,9 @@ Gets the controllers filters. Calling without specifying a `name` will return th
 Returns a Boolean value indicating whether the controller contains any filters.
 
 ```js
-var containsAnyFilters = dataController.hasFilters();
+var anyFilters = dataController.hasFilters();
 
-var containsDateFilters = dataController.hasFilters("dates");
+var dateFilters = dataController.hasFilters("dates");
 ```
 
 ### Events.**[disp](./src/events.js)**()
