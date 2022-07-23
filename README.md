@@ -52,10 +52,6 @@ Adds a listener with the passed name for `data-did-change` events.
 
 Removes all callbacks.
 
-#### dataController.**[filtersDidChange](./src/controller.js)**()
-
-Calls all listeners for `"filter"`.
-
 #### dataController.**[filters](./src/controller.js)**(name)
 
 Gets the controllers filters. Calling without specifying a `name` will return the following presented filters object.
@@ -116,6 +112,46 @@ Generates and returns a filename from the data with the passed `extension` and `
 #### data.**[sum](./src/controller.js)**
 
 Holds the sum of all values.
+
+#### data.**[max](./src/controller.js)**
+
+Holds the maximum value.
+
+#### data.**[min](./src/controller.js)**
+
+Holds the minimum value.
+
+#### data.**[labels](./src/controller.js)**
+
+Holds an array of all labels found in the data.
+
+#### data.**[locations](./src/controller.js)**
+
+Holds an array of all locations found in the data.
+
+#### data.**[dates](./src/controller.js)**
+
+Holds an array of all dates found in the data.
+
+#### data.**[groups](./src/controller.js)**
+
+Holds an array of all groups found in the data.
+
+#### data.**[byLabel](./src/controller.js)**
+
+Holds an [InternMap](https://github.com/mbostock/internmap) mapping label to data.
+
+#### data.**[byLocation](./src/controller.js)**
+
+Holds an [InternMap](https://github.com/mbostock/internmap) mapping location to data.
+
+#### data.**[byDate](./src/controller.js)**
+
+Holds an [InternMap](https://github.com/mbostock/internmap) mapping date to data.
+
+#### data.**[byGroup](./src/controller.js)**
+
+Holds an [InternMap](https://github.com/mbostock/internmap) mapping group to data.
 
 ### Events
 

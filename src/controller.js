@@ -15,17 +15,17 @@ function exposeData(data) {
   data.max = d3.max(data, (d) => d.value);
   data.min = d3.min(data, (d) => d.value);
 
-  // relations
-  data.byLabel = d3.group(data, (d) => d.label);
-  data.byGroup = d3.group(data, (d) => d.group || d.label);
-  data.byLocation = d3.group(data, (d) => d.location);
-  data.byDate = d3.group(data, (d) => d.date);
-
   // meta
   data.labels = Array.from(data.byLabel.keys());
   data.groups = Array.from(data.byGroup.keys());
   data.locations = Array.from(data.byLocation.keys());
   data.dates = Array.from(data.byDate.keys());
+
+  // relations
+  data.byLabel = d3.group(data, (d) => d.label);
+  data.byLocation = d3.group(data, (d) => d.location);
+  data.byDate = d3.group(data, (d) => d.date);
+  data.byGroup = d3.group(data, (d) => d.group || d.label);
 
   data.filterValid = () => data.filter((d) => d.value);
 
