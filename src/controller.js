@@ -1,10 +1,13 @@
 import * as d3 from "d3-array";
 import { dispatch as d3Dispatch } from "d3-dispatch";
 import { FILENAME_GENERATOR } from "./filename.js";
-import { Events } from "./events.js";
 
 function prefix(src, pre) {
   return (src = "" + src), src.startsWith(pre || "") ? src : pre + src;
+}
+
+function clone(data) {
+  return JSON.parse(JSON.stringify(data));
 }
 
 function exposeData(data) {
@@ -24,6 +27,18 @@ function exposeData(data) {
   data.locations = Array.from(data.byLocation.keys());
   data.dates = Array.from(data.byDate.keys());
 
+  data.filterValid = () => data.filter((d) => d.value);
+
+  data.dataByLabel = (label) => data.filter((d) => d.label === label);
+  data.dataByLocation = (loc) => data.filter((d) => d.location === loc);
+  data.dataByDate = (date) => data.filter((d) => d.date === date);
+  data.dataByGroup = (group) => data.filter((d) => d.group === group);
+
+  data.sumOfLabel = (label) => d3.sum(data.dataLabel(label), (d) => d.value);
+  data.sumOfLocation = (loc) => d3.sum(data.dataLocation(loc), (d) => d.value);
+  data.sumOfDate = (date) => d3.sum(data.dataDate(date), (d) => d.value);
+  data.sumOfGroup = (group) => d3.sum(data.dataGroup(group), (d) => d.value);
+
   return data;
 }
 
@@ -33,31 +48,24 @@ export function dataController(data) {
 
 export class DataController {
   constructor(data = []) {
-    if (!Array.isArray(data)) {
-      throw new Error("data not an array.");
-    }
+    if (!Array.isArray(data)) throw new Error("data not an array.");
 
     // private
 
     let attr = {
       id: "dc-" + new Date().getTime(),
 
-      // the controlled data
       data: data,
 
-      internalData: exposeData(JSON.parse(JSON.stringify(data))),
+      internalData: exposeData(clone(data)),
 
-      // the controlled filtered data
       snapshot: [],
 
       internalSnapshot: [],
 
-      // the applied filters
       filters: { labels: [], locations: [], dates: [], groups: [] },
 
       disp: d3Dispatch(
-        "filter",
-        "data",
         "filter-will-change",
         "filter-did-change",
         "data-will-change",
@@ -67,7 +75,7 @@ export class DataController {
 
     function calculateSnapshot() {
       let f = attr.filters;
-      let snapshot = d3.filter(attr.data, (d) => {
+      attr.snapshot = d3.filter(attr.data, (d) => {
         return !(
           f.locations.indexOf(d.location) !== -1 ||
           f.dates.indexOf(d.date) !== -1 ||
@@ -75,10 +83,10 @@ export class DataController {
           f.groups.indexOf(d.group) !== -1
         );
       });
-      attr.snapshot = exposeData(snapshot);
-
-      return attr.snapshot;
+      attr.internalSnapshot = exposeData(clone(attr.snapshot));
     }
+
+    calculateSnapshot();
 
     // public
 
@@ -86,40 +94,35 @@ export class DataController {
       return attr.id;
     };
 
-    this.snapshot = function (_) {
-      return attr.snapshot;
+    this.data = function (_data, sender = null) {
+      if (!arguments.length) return attr.internalData;
+      attr.disp.call("data-will-change", this, sender);
+      attr.data = _data;
+      attr.internalData = exposeData(clone(_data));
+      calculateSnapshot();
+      attr.disp.call("data-did-change", this, sender);
+      return this;
     };
 
-    this.data = function (_data) {
-      if (!arguments.length) return attr.data;
-      attr.data = exposeData(_data);
-      this.filtersDidChange();
-      return this;
+    this.snapshot = function (_) {
+      return attr.internalSnapshot;
     };
 
     // listeners
 
-    this.onFilter = function (name, callback) {
-      return attr.disp.on(prefix(name, "filter."), callback), this;
-    };
-
-    this.addFilterWillChangeListener = function (name, callback) {
+    this.onFilterWillChange = function (name, callback) {
       return attr.disp.on(prefix(name, "filter-will-change"), callback), this;
     };
 
-    this.addFilterDidChangeListener = function (name, callback) {
+    this.onFilterDidChange = function (name, callback) {
       return attr.disp.on(prefix(name, "filter-did-change"), callback), this;
     };
 
-    this.onChange = function (name, callback) {
-      return attr.disp.on(prefix(name, "data."), callback), this;
-    };
-
-    this.addDataWillChangeListener = function (name, callback) {
+    this.onDataWillChange = function (name, callback) {
       return attr.disp.on(prefix(name, "data-will-change"), callback), this;
     };
 
-    this.addDataDidChangeListener = function (name, callback) {
+    this.onDataDidChange = function (name, callback) {
       return attr.disp.on(prefix(name, "data-did-change"), callback), this;
     };
 
@@ -127,16 +130,9 @@ export class DataController {
       return (attr.disp = d3Dispatch("filter", "change")), this;
     };
 
-    this.filtersDidChange = function (name, action, item, sender) {
-      if (!sender) throw new Error("missing sender");
-      calculateSnapshot();
-      attr.disp.call("filter", this, sender, name, action, item);
-      return this;
-    };
-
     this.filters = function (name) {
       if (!arguments.length) return attr.filters;
-      if (!attr.filters[name]) throw new Error("invalid name: " + name);
+      if (!attr.filters[name]) throw new Error("invalid filter name: " + name);
       return attr.filters[name];
     };
 
@@ -150,24 +146,19 @@ export class DataController {
     };
 
     this.clearFilters = function (sender, name = null) {
-      if (!sender) {
-        return;
-      }
-      if (name) {
-        if (this.filters(name).length === 0)
-          return console.log("filter already empty", name);
+      if (sender && name) {
+        if (!this.hasFilters(name)) return;
+        attr.disp.call("filter-will-change", this, sender, name, "clear");
         attr.filters[name] = [];
-        return this.filtersDidChange(name, "clear", null, sender);
-      } else {
-        if (this.hasFilters()) {
-          attr.filters = {
-            labels: [],
-            locations: [],
-            dates: [],
-            groups: [],
-          };
-          this.filtersDidChange("all", "clear", null, sender);
-        }
+        calculateSnapshot();
+        attr.disp.call("filter-did-change", this, sender, name, "clear");
+      } else if (sender) {
+        if (!this.hasFilters()) return;
+        attr.disp.call("filter-will-change", this, sender, "all", "clear");
+        attr.filters = { labels: [], locations: [], dates: [], groups: [] };
+        attr.snapshot = attr.data;
+        attr.internalSnapshot = attr.internalData;
+        attr.disp.call("filter-did-change", this, sender, "all", "clear");
       }
     };
 
@@ -176,16 +167,21 @@ export class DataController {
     };
 
     this.addFilter = function (name, item, sender) {
-      Events.call("filter-will-change", sender, name, "add", item);
-      if (!this.filters(name).add(item)) return;
-      Events.call("filter-did-change", sender, name, "add", item);
-
-      this.filtersDidChange(name, "add", item, sender);
+      if (!sender) throw new Error("missing sender");
+      if (this.isFilter(name, item)) return;
+      attr.disp.call("filter-will-change", this, sender, name, "add", item);
+      this.filters(name).add(item);
+      calculateSnapshot();
+      attr.disp.call("filter-did-change", this, sender, name, "add", item);
     };
 
     this.removeFilter = function (name, item, sender) {
-      if (this.filters(name).remove(item))
-        this.filtersDidChange(name, "remove", item, sender);
+      if (!sender) throw new Error("missing sender");
+      if (!this.isFilter(name, item)) return;
+      attr.disp.call("filter-will-change", this, sender, name, "remove", item);
+      this.filters(name).remove(item);
+      calculateSnapshot();
+      attr.disp.call("filter-did-change", this, sender, name, "remove", item);
     };
 
     this.toggleFilter = function (name, item, sender) {
@@ -198,79 +194,7 @@ export class DataController {
       return FILENAME_GENERATOR(this, this.data(), extension, prefix);
     };
 
-    // initialize
-    calculateSnapshot();
-
     return this;
-  }
-
-  /** Returns entries with valid value. */
-  filterValid() {
-    return this.data().filter((d) => d.value);
-  }
-
-  byLabel() {
-    return d3.group(this.data(), (d) => d.label);
-  }
-
-  byGroup() {
-    return d3.group(this.data(), (d) => d.group || d.label);
-  }
-
-  byLocation() {
-    return d3.group(this.data(), (d) => d.location);
-  }
-
-  byDate() {
-    return d3.group(this.data(), (d) => d.date);
-  }
-
-  labels() {
-    return Array.from(this.byLabel().keys());
-  }
-
-  groups() {
-    return Array.from(this.byGroup().keys());
-  }
-
-  locations() {
-    return Array.from(this.byLocation().keys());
-  }
-
-  dates() {
-    return Array.from(this.byDate().keys());
-  }
-
-  dataGroup(s) {
-    return this.data().filter((d) => d.group === s);
-  }
-
-  dataLabel(l) {
-    return this.data().filter((d) => d.label === l);
-  }
-
-  dataLocation(l) {
-    return this.data().filter((d) => d.location === l);
-  }
-
-  dataDate(d) {
-    return this.data().filter((d) => d.date === d);
-  }
-
-  sumOfGroup(s) {
-    return d3.sum(this.dataGroup(s), (d) => d.value);
-  }
-
-  sumOfLabel(l) {
-    return d3.sum(this.dataLabel(l), (d) => d.value);
-  }
-
-  sumOfLocation(l) {
-    return d3.sum(this.dataLocation(l), (d) => d.value);
-  }
-
-  sumOfDate(d) {
-    return d3.sum(this.dataDate(s), (d) => d.value);
   }
 }
 

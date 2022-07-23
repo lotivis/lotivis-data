@@ -18,45 +18,45 @@ let dataController = lotivis.dataController();
 
 ## API Reference
 
-### dataController.**[id](./src/controller.js)**()
+#### dataController.**[id](./src/controller.js)**()
 
 Returns the controllers id.
 
-### dataController.**[data](./src/controller.js)**(_)
+#### dataController.**[data](./src/controller.js)**(_)
 
 Gets or sets the controllers data.
 
-### dataController.**[snapshot](./src/controller.js)**()
+#### dataController.**[snapshot](./src/controller.js)**()
 
 Returns the current snapshot from the filtered data.
 
 Call with specifying a `name` will return the corresponding array.
 
-### dataController.**[onFilter](./src/controller.js)**(name, callback)
-
-Adds a listener with the passed name for filter changes.
-
-### dataController.**[addFilterWillChangeListener](./src/controller.js)**(name, callback)
+#### dataController.**[onFilterWillChange](./src/controller.js)**(name, callback)
 
 Adds a listener with the passed name for `filter-will-change` events.
 
-### dataController.**[addFilterDidChangeListener](./src/controller.js)**(name, callback)
+#### dataController.**[onFilterDidChange](./src/controller.js)**(name, callback)
 
 Adds a listener with the passed name for `filter-did-change` events.
 
-### dataController.**[onChange](./src/controller.js)**(name, callback)
+#### dataController.**[onDataWillChange](./src/controller.js)**(name, callback)
 
-Adds a listener with the passed name for filter changes.
+Adds a listener with the passed name for `data-will-change` events.
 
-### dataController.**[removeAllListeners](./src/controller.js)**()
+#### dataController.**[onDataDidChange](./src/controller.js)**(name, callback)
+
+Adds a listener with the passed name for `data-did-change` events.
+
+#### dataController.**[removeAllListeners](./src/controller.js)**()
 
 Removes all callbacks.
 
-### dataController.**[filtersDidChange](./src/controller.js)**()
+#### dataController.**[filtersDidChange](./src/controller.js)**()
 
 Calls all listeners for `"filter"`.
 
-### dataController.**[filters](./src/controller.js)**(name)
+#### dataController.**[filters](./src/controller.js)**(name)
 
 Gets the controllers filters. Calling without specifying a `name` will return the following presented filters object.
 ```js
@@ -69,7 +69,7 @@ Gets the controllers filters. Calling without specifying a `name` will return th
 }
 ```
 
-### dataController.**[hasFilters](./src/controller.js)**(name?)
+#### dataController.**[hasFilters](./src/controller.js)**(name?)
 
 Returns a Boolean value indicating whether the controller contains any filters.
 
@@ -79,7 +79,7 @@ var anyFilters = dataController.hasFilters();
 var dateFilters = dataController.hasFilters("dates");
 ```
 
-### dataController.**[clearFilters](./src/controller.js)**(sender, name?)
+#### dataController.**[clearFilters](./src/controller.js)**(sender, name?)
 
 Clears the filters of the controller.
 
@@ -91,35 +91,43 @@ dataController.clearFilters(someChart);
 dataController.clearFilters(someChart, "dates");
 ```
 
-### dataController.**[isFilter](./src/controller.js)**(name, item)
+#### dataController.**[isFilter](./src/controller.js)**(name, item)
 
 Returns a Boolean value indicating whether the specified item is included in the specified filters list.
 
-### dataController.**[addFilter](./src/controller.js)**(name, item, sender)
+#### dataController.**[addFilter](./src/controller.js)**(name, item, sender)
 
 Adds the specified `item` to the specified filters list. 
 
-### dataController.**[removeFilter](./src/controller.js)**(name, item, sender)
+#### dataController.**[removeFilter](./src/controller.js)**(name, item, sender)
 
 Removes the specified `item` from the collection of filters with the specified `name`.
 
-### dataController.**[toggleFilter](./src/controller.js)**(name, item, sender)
+#### dataController.**[toggleFilter](./src/controller.js)**(name, item, sender)
 
 Toggles the filtered state of the passed item in the collection of filters with the passed name.
 
-### dataController.**[filename](./src/controller.js)**(extension, prefix)
+#### dataController.**[filename](./src/controller.js)**(extension, prefix)
 
 Generates and returns a filename from the data with the passed `extension` and `prefix`.
 
-### Events.**[disp](./src/events.js)**()
+### Data
+
+#### data.**[sum](./src/controller.js)**
+
+Holds the sum of all values.
+
+### Events
+
+#### Events.**[disp](./src/events.js)**()
 
 The static dispatch object.
 
-### Events.**[on](./src/events.js)**(type, callback)
+#### Events.**[on](./src/events.js)**(type, callback)
 
  Adds the given `callback` for the given `type`. 
 
-### Events.**[call](./src/events.js)**(type, sender, ...params)
+#### Events.**[call](./src/events.js)**(type, sender, ...params)
 
 Calls the `callback` for the given `type` with the given `sender` and `params`.
 
