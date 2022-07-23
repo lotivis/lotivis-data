@@ -87,6 +87,18 @@ dataController.clearFilters(someChart, "dates");
 
 Returns a Boolean value indicating whether the specified item is included in the specified filters list.
 
+### dataController.**[addFilter](./src/controller.js)**(name, item, sender)
+
+Adds the specified `item` to the specified filters list. 
+
+### dataController.**[removeFilter](./src/controller.js)**(name, item, sender)
+
+Removes the specified `item` to the specified filters list. 
+
+### dataController.**[toggleFilter](./src/controller.js)**(name, item, sender)
+
+Toggles the specified `item` in the specified filters list.
+
 ### Events.**[disp](./src/events.js)**()
 
 The static dispatch object.

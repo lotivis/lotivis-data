@@ -166,29 +166,32 @@ export class DataController {
      */
     this.hasFilters = function (name) {
       return arguments.length
-        ? this.filters(name).length > 0
+        ? this.hasFilters(name)
         : this.hasFilters("labels") ||
             this.hasFilters("groups") ||
             this.hasFilters("locations") ||
             this.hasFilters("dates");
     };
 
-    this.clear = function (name, sender) {
-      if (this.filters(name).length === 0)
-        return console.log("filter already empty", name);
-      attr.filters[name] = [];
-      return this.filtersDidChange(name, "clear", null, sender);
-    };
-
-    this.clearAll = function (sender) {
-      if (this.hasFilters()) {
-        attr.filters = {
-          labels: [],
-          locations: [],
-          dates: [],
-          groups: [],
-        };
-        this.filtersDidChange("all", "clear", null, sender);
+    this.clearFilters = function (sender, name = null) {
+      if (!sender) {
+        return;
+      }
+      if (name) {
+        if (this.filters(name).length === 0)
+          return console.log("filter already empty", name);
+        attr.filters[name] = [];
+        return this.filtersDidChange(name, "clear", null, sender);
+      } else {
+        if (this.hasFilters()) {
+          attr.filters = {
+            labels: [],
+            locations: [],
+            dates: [],
+            groups: [],
+          };
+          this.filtersDidChange("all", "clear", null, sender);
+        }
       }
     };
 
@@ -235,53 +238,23 @@ export class DataController {
      * @param {*} sender The sender who made this action
      */
     this.toggleFilter = function (name, item, sender) {
-      this.isFilter(name, item)
+      return this.isFilter(name, item)
         ? this.removeFilter(name, item, sender)
         : this.addFilter(name, item, sender);
     };
 
     /**
-     * Returns the data applying the filters.
-     * @returns
-     */
-    this.filteredData = function () {
-      let f = attr.filters;
-      return attr.data.filter(
-        (d) =>
-          !(
-            f.locations.indexOf(d.location) !== -1 ||
-            f.dates.indexOf(d.date) !== -1 ||
-            f.labels.indexOf(d.label) !== -1 ||
-            f.groups.indexOf(d.group) !== -1
-          )
-      );
-    };
-
-    /**
-     * Generates and returns a filename from the data with the passed
-     * extension and prefix.
+     * Generates and returns a filename from the data with the passed extension and prefix.
      * @param {string} ext The extension of the filename
      * @param {string} prefix An optional prefix for the filename
      * @returns The generated filename
      */
     this.filename = function (extension, prefix) {
-      return this.filenameGenerator()(this, this.data(), extension, prefix);
+      return FILENAME_GENERATOR(this, this.data(), extension, prefix);
     };
-
-    // this.datatext = function (id = "ltv-data") {
-    //   if (!document.getElementById(id)) return null;
-    //   return datatext()
-    //     .selector("#" + id)
-    //     .dataController(this)
-    //     .run();
-    // };
 
     // initialize
     calculateSnapshot();
-
-    // debug
-    // console.log("data controller", attr.id, this);
-    // data_preview(this);
 
     return this;
   }
