@@ -34,10 +34,10 @@ function exposeData(data) {
   data.dataByDate = (date) => data.filter((d) => d.date === date);
   data.dataByGroup = (group) => data.filter((d) => d.group === group);
 
-  data.sumOfLabel = (label) => d3.sum(data.dataLabel(label), (d) => d.value);
-  data.sumOfLocation = (loc) => d3.sum(data.dataLocation(loc), (d) => d.value);
-  data.sumOfDate = (date) => d3.sum(data.dataDate(date), (d) => d.value);
-  data.sumOfGroup = (group) => d3.sum(data.dataGroup(group), (d) => d.value);
+  data.sumOfLabel = (label) => d3.sum(data.dataByLabel(label), (d) => d.value);
+  data.sumOfLocation = (l) => d3.sum(data.dataByLocation(l), (d) => d.value);
+  data.sumOfDate = (date) => d3.sum(data.dataByDate(date), (d) => d.value);
+  data.sumOfGroup = (group) => d3.sum(data.dataByGroup(group), (d) => d.value);
 
   return data;
 }
@@ -198,22 +198,10 @@ export class DataController {
   }
 }
 
-/**
- * Adds the item if it not already exists in the array.
- *
- * @param {*} item The item to add
- * @returns Whether the item was added
- */
 Array.prototype.add = function (item) {
   return this.indexOf(item) === -1 ? this.push(item) : false;
 };
 
-/**
- * Removes the item.
- *
- * @param {*} item The item to remove
- * @returns Whether the given item was removed
- */
 Array.prototype.remove = function (item) {
   let i = this.indexOf(item);
   return i !== -1 ? this.splice(i, 1) : false;
