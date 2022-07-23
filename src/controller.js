@@ -107,8 +107,20 @@ export class DataController {
       return attr.disp.on(prefix(name, "filter-will-change"), callback), this;
     };
 
+    this.addFilterDidChangeListener = function (name, callback) {
+      return attr.disp.on(prefix(name, "filter-did-change"), callback), this;
+    };
+
     this.onChange = function (name, callback) {
       return attr.disp.on(prefix(name, "data."), callback), this;
+    };
+
+    this.addDataWillChangeListener = function (name, callback) {
+      return attr.disp.on(prefix(name, "data-will-change"), callback), this;
+    };
+
+    this.addDataDidChangeListener = function (name, callback) {
+      return attr.disp.on(prefix(name, "data-did-change"), callback), this;
     };
 
     this.removeAllListeners = function () {

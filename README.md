@@ -40,6 +40,10 @@ Adds a listener with the passed name for filter changes.
 
 Adds a listener with the passed name for `filter-will-change` events.
 
+### dataController.**[addFilterDidChangeListener](./src/controller.js)**(name, callback)
+
+Adds a listener with the passed name for `filter-did-change` events.
+
 ### dataController.**[onChange](./src/controller.js)**(name, callback)
 
 Adds a listener with the passed name for filter changes.
