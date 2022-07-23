@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "d3-time-format";
 
 const MAX_FILENAME_LENGTH_OS = 255;
 

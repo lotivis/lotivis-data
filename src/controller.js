@@ -1,4 +1,5 @@
-import * as d3 from "d3";
+import * as d3 from "d3-array";
+import { dispatch as d3Dispatch } from "d3-dispatch";
 import { FILENAME_GENERATOR } from "./filename.js";
 import { Events } from "./events.js";
 
@@ -31,47 +32,57 @@ export function dataController(data) {
 }
 
 export class DataController {
-  /**
-   * Creates a new DataController with the passed data.
-   *
-   * @param {*} data
-   * @returns
-   */
-  constructor(data) {
+  constructor(data = []) {
     if (!Array.isArray(data)) {
       throw new Error("data not an array.");
     }
 
-    // create data model
-    var data = exposeData(data);
-    // extremes
+    // private
 
-    let id = "dc-" + new Date().getTime(),
-      disp = d3.dispatch("filter", "data"),
-      attr = {
-        id: id,
+    let attr = {
+      id: "dc-" + new Date().getTime(),
 
-        // the controlled data
-        data: data,
+      // the controlled data
+      data: data,
 
-        // the controlled filtered data
-        snapshot: data,
+      internalData: exposeData(JSON.parse(JSON.stringify(data))),
 
-        // the applied filters
-        filters: { labels: [], locations: [], dates: [], groups: [] },
+      // the controlled filtered data
+      snapshot: [],
 
-        // a filename generator
-        filenameGenerator: FILENAME_GENERATOR,
+      // the applied filters
+      filters: { labels: [], locations: [], dates: [], groups: [] },
 
-        // dateAccess: DEFAULT_DATE_ORDINATOR,
-      };
+      disp: d3Dispatch("filter", "data"),
+    };
 
-    this.id = id;
-    attr.id = id;
+    /**
+     *
+     * @returns
+     */
+    function calculateSnapshot() {
+      let f = attr.filters;
+      let snapshot = d3.filter(attr.data, (d) => {
+        return !(
+          f.locations.indexOf(d.location) !== -1 ||
+          f.dates.indexOf(d.date) !== -1 ||
+          f.labels.indexOf(d.label) !== -1 ||
+          f.groups.indexOf(d.group) !== -1
+        );
+      });
+      attr.snapshot = exposeData(snapshot);
 
-    // this.id = function () {
-    //   return id;
-    // };
+      return attr.snapshot;
+    }
+
+    // public
+
+    /**
+     * Returns the controllers id.
+     */
+    this.id = function () {
+      return attr.id;
+    };
 
     /**
      * Gets or sets the data.
@@ -97,31 +108,6 @@ export class DataController {
         : attr.snapshot || attr.data;
     };
 
-    this.filenameGenerator = function (_) {
-      return arguments.length == 0
-        ? attr.filenameGenerator
-        : (attr.filenameGenerator = _);
-    };
-
-    /**
-     *
-     * @returns
-     */
-    function calculateSnapshot() {
-      let f = attr.filters;
-      let snapshot = d3.filter(attr.data, (d) => {
-        return !(
-          f.locations.indexOf(d.location) !== -1 ||
-          f.dates.indexOf(d.date) !== -1 ||
-          f.labels.indexOf(d.label) !== -1 ||
-          f.groups.indexOf(d.group) !== -1
-        );
-      });
-      attr.snapshot = exposeData(snapshot);
-
-      return attr.snapshot;
-    }
-
     // listeners
 
     /**
@@ -131,7 +117,7 @@ export class DataController {
      * @returns {this} The controller iteself
      */
     this.onFilter = function (name, callback) {
-      return disp.on(prefix(name, "filter."), callback), this;
+      return attr.disp.on(prefix(name, "filter."), callback), this;
     };
 
     /**
@@ -141,7 +127,7 @@ export class DataController {
      * @returns {this} The controller iteself
      */
     this.onChange = function (name, callback) {
-      return disp.on(prefix(name, "data."), callback), this;
+      return attr.disp.on(prefix(name, "data."), callback), this;
     };
 
     /**
@@ -149,7 +135,7 @@ export class DataController {
      * @returns {this} The chart itself
      */
     this.removeAllListeners = function () {
-      return (disp = d3.dispatch("filter", "change")), this;
+      return (attr.disp = d3Dispatch("filter", "change")), this;
     };
 
     // # FILTERS
@@ -157,7 +143,7 @@ export class DataController {
     this.filtersDidChange = function (name, action, item, sender) {
       if (!sender) throw new Error("missing sender");
       calculateSnapshot();
-      disp.call("filter", this, sender, name, action, item);
+      attr.disp.call("filter", this, sender, name, action, item);
       return this;
     };
 
@@ -294,21 +280,10 @@ export class DataController {
     calculateSnapshot();
 
     // debug
-    console.log("data controller", attr.id, this);
+    // console.log("data controller", attr.id, this);
     // data_preview(this);
 
     return this;
-  }
-
-  /**
-   * Creates and returns a new datatext with the passed selector. Also sets
-   * the DataController to the receiver.
-   *
-   * @param {String} selector The selctor for the datatext
-   * @returns {datatext} A newly created datatext
-   */
-  datatext(selector = "ltv-data") {
-    return datatext().dataController(this).selector(selector);
   }
 
   /** Returns entries with valid value. */

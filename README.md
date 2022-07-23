@@ -1,5 +1,7 @@
 # lotivis-data [![Node.js CI](https://github.com/lukasdanckwerth/lotivis-data/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/lukasdanckwerth/lotivis-data/actions/workflows/node.js.yml)
 
+Data controller for lotivis.js.
+
 ## Installing
 
 If you use npm, `npm install lotivis-data`. You can also download the [latest realease on GitHub](https://github.com/lukasdanckwerth/lotivis-data/releases/latest). For using in browsers, you can load the UMD bundle from an npm-based CDN such as jsDelivr.
@@ -18,7 +20,7 @@ let dataController = lotivis.dataController();
 
 ### dataController.**[id](./src/controller.js)**()
 
-Returns the id of the controller.
+Returns the controllers id.
 
 ### dataController.**[data](./src/controller.js)**(_)
 
@@ -28,9 +30,7 @@ Gets or sets the controllers data.
 
 Returns the current snapshot from the filtered data.
 
-### dataController.**[filters](./src/controller.js)**(_)
-
-Gets or sets the controllers filters.
+Call with specifying a `name` will return the corresponding array.
 
 ### dataController.**[onFilter](./src/controller.js)**(name, callback)
 
@@ -43,6 +43,33 @@ Adds a listener with the passed name for filter changes.
 ### dataController.**[removeAllListeners](./src/controller.js)**()
 
 Removes all callbacks.
+
+### dataController.**[filtersDidChange](./src/controller.js)**()
+
+Calls all listeners for `"filter"`.
+
+### dataController.**[filters](./src/controller.js)**(name)
+
+Gets the controllers filters. Calling without specifying a `name` will return the following presented filters object.
+```js
+// available filters
+{
+    labels: [],
+    locations: [],
+    dates: [],
+    groups: []
+}
+```
+
+### dataController.**[hasFilters](./src/controller.js)**()
+
+Returns a Boolean value indicating whether the controller contains any filters.
+
+```js
+var containsAnyFilters = dataController.hasFilters();
+
+var containsDateFilters = dataController.hasFilters("dates");
+```
 
 ### Events.**[disp](./src/events.js)**()
 

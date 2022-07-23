@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import * as d3 from "d3-dispatch";
 
 /**
  * Events dispatch center.
@@ -11,6 +11,8 @@ import * as d3 from "d3";
  * - "map-selection-did-change"
  */
 export class Events {
+  static debug = true;
+
   /**
    * Global dispatch object.
    */
@@ -31,7 +33,10 @@ export class Events {
    * @param {*} callback
    */
   static on(type, callback) {
-    console.log("Events on", type);
+    if (this.debug) {
+      console.info("[lotivis-data]  [Events] on", type, sender, ...params);
+    }
+
     this.disp.on(type, callback);
   }
 
@@ -45,7 +50,10 @@ export class Events {
    * @throws "unknown type" on unknown event type.
    */
   static call(type, sender, ...params) {
-    console.log("Events call", type);
+    if (this.debug) {
+      console.info("[lotivis-data]  [Events] call", type, sender, ...params);
+    }
+
     this.disp.call(type, sender, ...params);
   }
 }
