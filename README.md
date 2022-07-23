@@ -36,6 +36,10 @@ Call with specifying a `name` will return the corresponding array.
 
 Adds a listener with the passed name for filter changes.
 
+### dataController.**[addFilterWillChangeListener](./src/controller.js)**(name, callback)
+
+Adds a listener with the passed name for `filter-will-change` events.
+
 ### dataController.**[onChange](./src/controller.js)**(name, callback)
 
 Adds a listener with the passed name for filter changes.
@@ -93,11 +97,11 @@ Adds the specified `item` to the specified filters list.
 
 ### dataController.**[removeFilter](./src/controller.js)**(name, item, sender)
 
-Removes the specified `item` to the specified filters list. 
+Removes the specified `item` from the collection of filters with the specified `name`.
 
 ### dataController.**[toggleFilter](./src/controller.js)**(name, item, sender)
 
-Toggles the specified `item` in the specified filters list.
+Toggles the filtered state of the passed item in the collection of filters with the passed name.
 
 ### dataController.**[filename](./src/controller.js)**(extension, prefix)
 

@@ -50,16 +50,21 @@ export class DataController {
       // the controlled filtered data
       snapshot: [],
 
+      internalSnapshot: [],
+
       // the applied filters
       filters: { labels: [], locations: [], dates: [], groups: [] },
 
-      disp: d3Dispatch("filter", "data"),
+      disp: d3Dispatch(
+        "filter",
+        "data",
+        "filter-will-change",
+        "filter-did-change",
+        "data-will-change",
+        "data-did-change"
+      ),
     };
 
-    /**
-     *
-     * @returns
-     */
     function calculateSnapshot() {
       let f = attr.filters;
       let snapshot = d3.filter(attr.data, (d) => {
@@ -77,18 +82,14 @@ export class DataController {
 
     // public
 
-    /**
-     * Returns the controllers id.
-     */
     this.id = function () {
       return attr.id;
     };
 
-    /**
-     * Gets or sets the data.
-     * @param {*} _data
-     * @returns {data|this}
-     */
+    this.snapshot = function (_) {
+      return attr.snapshot;
+    };
+
     this.data = function (_data) {
       if (!arguments.length) return attr.data;
       attr.data = exposeData(_data);
@@ -96,49 +97,23 @@ export class DataController {
       return this;
     };
 
-    /**
-     * Gets or sets the snapshot attribute. When getting and snapshot is null
-     * will fallback on data attribute.
-     * @param {*} _
-     * @returns {snapshot|this}
-     */
-    this.snapshot = function (_) {
-      return arguments.length
-        ? ((attr.snapshot = _), this)
-        : attr.snapshot || attr.data;
-    };
-
     // listeners
 
-    /**
-     * Adds a listener with the passed name for filter changes.
-     * @param {*} name The name of the listener
-     * @param {*} callback The callback handler
-     * @returns {this} The controller iteself
-     */
     this.onFilter = function (name, callback) {
       return attr.disp.on(prefix(name, "filter."), callback), this;
     };
 
-    /**
-     * Adds a listener with the passed name for data changes.
-     * @param {*} name The name of the listener
-     * @param {*} callback The callback handler
-     * @returns {this} The controller iteself
-     */
+    this.addFilterWillChangeListener = function (name, callback) {
+      return attr.disp.on(prefix(name, "filter-will-change"), callback), this;
+    };
+
     this.onChange = function (name, callback) {
       return attr.disp.on(prefix(name, "data."), callback), this;
     };
 
-    /**
-     * Removes all callbacks from the dispatcher.
-     * @returns {this} The chart itself
-     */
     this.removeAllListeners = function () {
       return (attr.disp = d3Dispatch("filter", "change")), this;
     };
-
-    // # FILTERS
 
     this.filtersDidChange = function (name, action, item, sender) {
       if (!sender) throw new Error("missing sender");
@@ -147,30 +122,19 @@ export class DataController {
       return this;
     };
 
-    /**
-     * Returns either the filters object containing all filter list if no
-     * argument is passed, or the filter list for the passed name.
-     * @param {*} name The name of the filter list
-     * @returns The filters object or a single list
-     */
     this.filters = function (name) {
       if (!arguments.length) return attr.filters;
       if (!attr.filters[name]) throw new Error("invalid name: " + name);
       return attr.filters[name];
     };
 
-    /**
-     *
-     * @param {*} name
-     * @returns
-     */
     this.hasFilters = function (name) {
       return arguments.length
-        ? this.hasFilters(name)
-        : this.hasFilters("labels") ||
-            this.hasFilters("groups") ||
-            this.hasFilters("locations") ||
-            this.hasFilters("dates");
+        ? this.filters(name).length > 0
+        : this.filters("labels").length > 0 ||
+            this.filters("dates").length > 0 ||
+            this.filters("labels").length > 0 ||
+            this.filters("groups").length > 0;
     };
 
     this.clearFilters = function (sender, name = null) {
@@ -195,22 +159,10 @@ export class DataController {
       }
     };
 
-    /**
-     * Returns true if the filters with the passed name contains the passed item.
-     * @param {String} name The name of the filter
-     * @param {String} item The item to check if it is filtered.
-     * @returns {Boolean} Whether the item is filtered
-     */
     this.isFilter = function (name, item) {
       return this.filters(name).indexOf(item) !== -1;
     };
 
-    /**
-     * Adds the passed item to the collection of filters with the passed name.
-     * @param {*} name The name of the filter
-     * @param {*} item The item to check if it is filtered
-     * @param {*} sender The sender who made this action
-     */
     this.addFilter = function (name, item, sender) {
       Events.call("filter-will-change", sender, name, "add", item);
       if (!this.filters(name).add(item)) return;
@@ -219,36 +171,17 @@ export class DataController {
       this.filtersDidChange(name, "add", item, sender);
     };
 
-    /**
-     * Removes the passed item from the collection of filters with the passed name.
-     * @param {*} name The name of the filter
-     * @param {*} item The item to remove
-     * @param {*} sender The sender who made this action
-     */
     this.removeFilter = function (name, item, sender) {
       if (this.filters(name).remove(item))
         this.filtersDidChange(name, "remove", item, sender);
     };
 
-    /**
-     * Toggles the filtered state of the passed item in the collection of filters
-     * with the passed name.
-     * @param {*} name The name of the filter
-     * @param {*} item The item to toggle
-     * @param {*} sender The sender who made this action
-     */
     this.toggleFilter = function (name, item, sender) {
       return this.isFilter(name, item)
         ? this.removeFilter(name, item, sender)
         : this.addFilter(name, item, sender);
     };
 
-    /**
-     * Generates and returns a filename from the data with the passed extension and prefix.
-     * @param {string} ext The extension of the filename
-     * @param {string} prefix An optional prefix for the filename
-     * @returns The generated filename
-     */
     this.filename = function (extension, prefix) {
       return FILENAME_GENERATOR(this, this.data(), extension, prefix);
     };
