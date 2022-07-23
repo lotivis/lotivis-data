@@ -99,6 +99,10 @@ Removes the specified `item` to the specified filters list.
 
 Toggles the specified `item` in the specified filters list.
 
+### dataController.**[filename](./src/controller.js)**(extension, prefix)
+
+Generates and returns a filename from the data with the passed `extension` and `prefix`.
+
 ### Events.**[disp](./src/events.js)**()
 
 The static dispatch object.
