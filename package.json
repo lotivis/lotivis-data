@@ -19,7 +19,9 @@
   },
   "scripts": {
     "build": "rollup --config",
-    "build:watch": "rollup --config --watch"
+    "build:watch": "rollup --config --watch",
+    "test": "mocha test/**/*-test.js",
+    "test:watch": "mocha test/**/*-test.js --watch"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.3.0",

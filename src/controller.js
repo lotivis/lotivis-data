@@ -1,44 +1,33 @@
 import * as d3 from "d3";
-import { attributable } from "./attributable.js";
 import { FILENAME_GENERATOR } from "./filename.js";
-import { Data } from "./data.js";
 import { Events } from "./events.js";
 
 function prefix(src, pre) {
   return (src = "" + src), src.startsWith(pre || "") ? src : pre + src;
 }
 
+function exposeData(data) {
+  data.sum = d3.sum(data, (d) => d.value);
+  data.max = d3.max(data, (d) => d.value);
+  data.min = d3.min(data, (d) => d.value);
+
+  // relations
+  data.byLabel = d3.group(data, (d) => d.label);
+  data.byGroup = d3.group(data, (d) => d.group || d.label);
+  data.byLocation = d3.group(data, (d) => d.location);
+  data.byDate = d3.group(data, (d) => d.date);
+
+  // meta
+  data.labels = Array.from(data.byLabel.keys());
+  data.groups = Array.from(data.byGroup.keys());
+  data.locations = Array.from(data.byLocation.keys());
+  data.dates = Array.from(data.byDate.keys());
+
+  return data;
+}
+
 export function dataController(data) {
   return new DataController(data);
-}
-
-export function flatDataset(d) {
-  if (Array.isArray(d)) {
-    throw new Error("expecting object. found array");
-  }
-
-  if (!d || !d.data) {
-    throw new Error("dataset has no data");
-  }
-
-  return d.data.map((i) => {
-    return {
-      label: d.label,
-      group: d.group,
-      location: i.location,
-      date: i.date,
-      value: i.value,
-    };
-  });
-}
-
-/**
- * Flattens the given datasets.
- * @param {*} ds
- * @returns {Array} The flat version
- */
-export function flatDatasets(ds) {
-  return ds.reduce((memo, d) => memo.concat(flatDataset(d)), []);
 }
 
 export class DataController {
@@ -49,10 +38,13 @@ export class DataController {
    * @returns
    */
   constructor(data) {
-    if (!Array.isArray(data)) throw new Error("data not an array.");
+    if (!Array.isArray(data)) {
+      throw new Error("data not an array.");
+    }
 
     // create data model
-    data = Data(data);
+    var data = exposeData(data);
+    // extremes
 
     let id = "dc-" + new Date().getTime(),
       disp = d3.dispatch("filter", "data"),
@@ -74,14 +66,41 @@ export class DataController {
         // dateAccess: DEFAULT_DATE_ORDINATOR,
       };
 
-    // expose atrributes as getter-setter functions
-    attributable(this, attr);
-
     this.id = id;
     attr.id = id;
 
-    this.id = function () {
-      return id;
+    // this.id = function () {
+    //   return id;
+    // };
+
+    /**
+     * Gets or sets the data.
+     * @param {*} _data
+     * @returns {data|this}
+     */
+    this.data = function (_data) {
+      if (!arguments.length) return attr.data;
+      attr.data = exposeData(_data);
+      this.filtersDidChange();
+      return this;
+    };
+
+    /**
+     * Gets or sets the snapshot attribute. When getting and snapshot is null
+     * will fallback on data attribute.
+     * @param {*} _
+     * @returns {snapshot|this}
+     */
+    this.snapshot = function (_) {
+      return arguments.length
+        ? ((attr.snapshot = _), this)
+        : attr.snapshot || attr.data;
+    };
+
+    this.filenameGenerator = function (_) {
+      return arguments.length == 0
+        ? attr.filenameGenerator
+        : (attr.filenameGenerator = _);
     };
 
     /**
@@ -98,7 +117,7 @@ export class DataController {
           f.groups.indexOf(d.group) !== -1
         );
       });
-      attr.snapshot = Data(snapshot);
+      attr.snapshot = exposeData(snapshot);
 
       return attr.snapshot;
     }
@@ -250,30 +269,6 @@ export class DataController {
             f.groups.indexOf(d.group) !== -1
           )
       );
-    };
-
-    /**
-     * Gets or sets the data.
-     * @param {*} _data
-     * @returns {data|this}
-     */
-    this.data = function (_data) {
-      if (!arguments.length) return attr.data;
-      attr.data = Data(_data);
-      this.filtersDidChange();
-      return this;
-    };
-
-    /**
-     * Gets or sets the snapshot attribute. When getting and snapshot is null
-     * will fallback on data attribute.
-     * @param {*} _
-     * @returns {snapshot|this}
-     */
-    this.snapshot = function (_) {
-      return arguments.length
-        ? ((attr.snapshot = _), this)
-        : attr.snapshot || attr.data;
     };
 
     /**
