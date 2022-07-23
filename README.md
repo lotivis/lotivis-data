@@ -2,6 +2,18 @@
 
 Data controller for lotivis.js.
 
+```js
+let data = [
+  { label: "label-1", location: "paris", date: "1999-01-01", value: 1 },
+  { label: "label-1", location: "paris", date: "1999-01-02", value: 2 },
+  { label: "label-1", location: "berlin", date: "1999-01-03", value: 3 },
+];
+
+let dataController = lotivis.dataController(data);
+
+// append data controller to some charts ...
+```
+
 ## Installing
 
 If you use npm, `npm install lotivis-data`. You can also download the [latest realease on GitHub](https://github.com/lukasdanckwerth/lotivis-data/releases/latest). For using in browsers, you can load the UMD bundle from an npm-based CDN such as jsDelivr.
