@@ -61,7 +61,7 @@ Gets the controllers filters. Calling without specifying a `name` will return th
 }
 ```
 
-### dataController.**[hasFilters](./src/controller.js)**()
+### dataController.**[hasFilters](./src/controller.js)**(name?)
 
 Returns a Boolean value indicating whether the controller contains any filters.
 
@@ -70,6 +70,22 @@ var anyFilters = dataController.hasFilters();
 
 var dateFilters = dataController.hasFilters("dates");
 ```
+
+### dataController.**[clearFilters](./src/controller.js)**(sender, name?)
+
+Clears the filters of the controller.
+
+```js
+// clear all filters
+dataController.clearFilters(someChart);
+
+// clear date filters
+dataController.clearFilters(someChart, "dates");
+```
+
+### dataController.**[isFilter](./src/controller.js)**(name, item)
+
+Returns a Boolean value indicating whether the specified item is included in the specified filters list.
 
 ### Events.**[disp](./src/events.js)**()
 
