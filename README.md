@@ -153,6 +153,42 @@ Holds an [InternMap](https://github.com/mbostock/internmap) mapping date to data
 
 Holds an [InternMap](https://github.com/mbostock/internmap) mapping group to data.
 
+#### data.**[filterValid](./src/controller.js)**()
+
+Returns an array containing only data with valid values.
+
+#### data.**[dataByLabel](./src/controller.js)**(label)
+
+Returns an array containing only data for the specified `label`.
+
+#### data.**[dataByLocation](./src/controller.js)**(location)
+
+Returns an array containing only data for the specified `location`.
+
+#### data.**[dataByDate](./src/controller.js)**(date)
+
+Returns an array containing only data for the specified `date`.
+
+#### data.**[dataByGroup](./src/controller.js)**(group)
+
+Returns an array containing only data for the specified `group`.
+
+#### data.**[sumOfLabel](./src/controller.js)**(label)
+
+Returns the sum of data for the specified `label`.
+
+#### data.**[sumOfLocation](./src/controller.js)**(location)
+
+Returns the sum of data for the specified `location`.
+
+#### data.**[sumOfDate](./src/controller.js)**(date)
+
+Returns the sum of data for the specified `date`.
+
+#### data.**[sumOfGroup](./src/controller.js)**(group)
+
+Returns the sum of data for the specified `group`.
+
 ### Events
 
 #### Events.**[disp](./src/events.js)**()
