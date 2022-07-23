@@ -11,7 +11,7 @@ let data = [
 
 let dataController = lotivis.dataController(data);
 
-// append data controller to some charts ...
+// append data controller to charts ...
 ```
 
 ## Installing
