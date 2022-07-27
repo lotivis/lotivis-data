@@ -8,23 +8,10 @@ const separator = " ";
 
 const formatTime = d3.timeFormat("%Y-%m-%d" + separator + "%H-%M-%S");
 
-/**
- * Removes invalid characters of filenames.
- * @param {string} filename The filename to make safe
- * @returns {string} A safe-to-use filename
- */
 function safe(name) {
   return name.split(` `).join(`-`).split(`/`).join(`-`).split(`:`).join(`-`);
 }
 
-/**
- * The default filename creator.
- * @param {*} dc The data controller
- * @param {*} data The data
- * @param {*} extension An optional extension
- * @param {*} suf An optional suffix
- * @returns
- */
 export const FILENAME_GENERATOR = function (dc, data, extension, suf) {
   let trimmed = data.labels
     .map(safe)

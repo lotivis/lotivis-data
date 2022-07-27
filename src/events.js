@@ -34,7 +34,7 @@ export class Events {
    */
   static on(type, callback) {
     if (this.debug) {
-      console.info("[lotivis-data]  [Events] on", type, sender, ...params);
+      console.info("[lotivis-data]  [Events] on", type, callback);
     }
 
     this.disp.on(type, callback);
